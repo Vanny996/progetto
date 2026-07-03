@@ -18,20 +18,14 @@ export const verifyRegistrationToken = async (id,token)=> {
 
 }
 export const loginUser = async (email,password)=>{
-    let user  = users [email];
-    if (!user) {
-        user = await userRepo.getActiveByEmail(email);
-        users[user,email]= user;
-    }
-    if (user , password !== cryptoUtils.sha256(password, user.salt)) {
+    const user  = await userRepo.findByEmail(email);
+    if (user.password !== cryptoUtils.sha256(password, user.salt)) {
         throw new UnauthorizedException("Unauthorized");
     }
-
     const { accessToken, refreshToken } = cryptoUtils.generateTokens(user);
-    console.log("AccessToken:", accessToken);
-    return {
+        return {
         accessToken,
         refreshToken,
         name: user.name,
-        id: user.id
+        id: user._id
     }}

@@ -1,14 +1,13 @@
 import * as chai from 'chai';
 const { expect } = chai;
 import chaiHttp, { request } from 'chai-http';
-import app from '../../server.js';
+import app from '../../../server.js';
 import mongoose from 'mongoose';
-import CryptoUtils from "../../src/utils/CryptoUtils.js";
+import CryptoUtils from "../../utils/cryptoUtils.js";
 import { ObjectId } from "bson";
-import { activityStatus } from "../../src/constants/const.js";
+import{activityStatus} from "../../constants/const.js";
 import fixturesUtils from "../fixtures/fixturesUtils.js";
-import {archive} from "../../src/controllers/activityControllers/archiveActivitiesController.js";
-
+import {archive} from "../../controllers/activityControllers/archiveActivitiesController.js";
 
 
 const objectId = mongoose.Types.ObjectId;

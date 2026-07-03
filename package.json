@@ -7,7 +7,7 @@
   "type": "module",
   "main": "dataBase.js",
   "scripts": {
-    "test": "mocha src/tests/authtest.js",
+    "test": "mocha 'src/tests/**/*.js' --recursive",
     "start": "node server.js"
   },
   "keywords": [],

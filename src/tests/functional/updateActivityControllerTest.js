@@ -1,17 +1,15 @@
 import * as chai from 'chai';
 const { expect } = chai;
 import chaiHttp, { request } from 'chai-http';
-import app from '../../server.js';
-import sinon from 'sinon';
-import CryptoUtils from "../../src/utils/CryptoUtils.js";
+import app from '../../../server.js';
+import mongoose from 'mongoose';
+import CryptoUtils from "../../utils/cryptoUtils.js";
 import { ObjectId } from "bson";
-import { activityStatus } from "../../src/constants/const.js";
+import {activityStatus} from "../../constants/const.js";
 import fixturesUtils from "../fixtures/fixturesUtils.js";
-import {updateActivityById} from "../../src/services/activityService.js";
-
 chai.use(chaiHttp);
 
-describe.only('Update activity controller tests', () => {
+describe('Update activity controller tests', () => {
     afterEach(async () => {
         //sandbox.restore();
         await fixturesUtils.clearDb();
@@ -110,8 +108,4 @@ describe.only('Update activity controller tests', () => {
             expect(res.body.message).to.eq(`activity not found`);
         });
     });
-    describe('PATCH update activity success', () => {
-
-
-    });
-})
+  })

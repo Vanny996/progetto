@@ -1,9 +1,12 @@
-import { getActivities} from "../../src/services/activityService.js";
-import {request} from "chai-http";
-import app from "../../server.js";
-import fixturesUtils   from "../fixtures/fixturesUtils.js";
-import {activityStatus} from "../../src/constants/const.js";
-import CryptoUtils from "../../src/utils/CryptoUtils.js";
+import * as chai from 'chai';
+const { expect } = chai;
+import chaiHttp, { request } from 'chai-http';
+import app from '../../../server.js';
+import mongoose from 'mongoose';
+import CryptoUtils from "../../utils/cryptoUtils.js";
+import { ObjectId } from "bson";
+import {activityStatus} from "../../constants/const.js";
+import fixturesUtils from "../fixtures/fixturesUtils.js";
 
 export const listOpen = async (req, res) => {
     try {

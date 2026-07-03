@@ -1,6 +1,6 @@
 import fixturesUtils from "../fixtures/fixturesUtils.js";
 import sinon from "sinon";
-import mailService from "../../src/services/mailService.js";
+import mailService from "../../services/mailService.js";
 import mongoose from "mongoose";
 import {expect} from "chai";
 

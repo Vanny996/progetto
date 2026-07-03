@@ -1,9 +1,10 @@
 import * as chai from 'chai';
 const { expect } = chai;
 import chaiHttp, { request } from 'chai-http';
-import app from '../../server.js';
+import app from '../../../server.js';
+
 import mongoose from 'mongoose';
-import CryptoUtils from "../../src/utils/CryptoUtils.js";
+import CryptoUtils from '../../utils/cryptoUtils.js';
 import fixturesUtils from "../fixtures/fixturesUtils.js";
 
 const objectId = mongoose.Types.ObjectId;
