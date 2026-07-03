@@ -1,0 +1,7 @@
+curl -X POST -H 'Content-Type: application/json' -d '{"name": "activity1", "description": "description1"}' http://localhost:8003
+curl -X GET -H 'Content-Type: application/json' http://localhost:8003/1
+curl -X PATCH -H 'Content-Type: application/json' -d '{"name": "activity modified", "description": "description modified"}' http://localhost:8003/1
+curl -X DELETE -H 'Content-Type: application/json' http://localhost:8003/1
+user
+curl -X POST -H 'Content-Type: application/json' -d '{"name": "vanessa", "email": "vanessacollu9@gmail.com", "password": "Password123"}' http://localhost:8003/user
+curl -X POST -H 'Content-Type: application/json' -d '{"email": "vanessacollu9@gmail.com", "password": "Password123"}' http://localhost:8000/user/login

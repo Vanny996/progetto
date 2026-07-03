@@ -1,0 +1,53 @@
+import CryptoUtils from "../../utils/cryptoUtils.js";
+import userSchema from "../../schemas/userSchema.js";
+import {activityStatus} from "../../constants/const.js";
+import activitySchema from "../../schemas/activitySchema.js";
+import mongoose from "mongoose";
+
+const ObjectId = mongoose.Types.ObjectId;
+
+class FixturesUtils {
+    async createUser(data, save) {
+        const {password, salt} = CryptoUtils.hashPassword(data.password || 'password');
+
+        const user = {
+            name: data.name || 'test user',
+            username:'testusername',
+            _id: data.id|| new ObjectId(),
+            email: data.email || 'test@gmail.com',
+            password: password,
+            salt: salt
+        }
+        if (save) {
+            const res = await userSchema.create(user);
+            return res.toObject();
+        }
+        return user;
+    }
+
+    async createActivity(data, save) {
+        const activity = {
+            name: data.name || 'test Activity',
+            _id: data.id || new ObjectId(),
+            ownerId: data.ownerId || data.owner || 'null',
+            description: data.description || 'test Activity description',
+            status: data.status || activityStatus.OPEN,
+            dueDate:data.dueDate || new Date(),
+        }
+        if (save) {
+            const res = await activitySchema.create(activity);
+            return res.toObject();
+        }
+        return activity;
+    }
+    async clearDb() {
+        await activitySchema.deleteMany();
+        await userSchema.deleteMany();
+    }
+    async getUserFromDb(id){
+        const user = await userSchema.findById(id);
+        return user? user.toObject() : null;
+    }
+};
+
+export default new FixturesUtils();

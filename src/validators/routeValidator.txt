@@ -1,0 +1,16 @@
+import joi  from 'joi';
+import expressJoi from 'express-joi-validation';
+import { isObjectIdOrHexString } from 'mongoose';
+const validator =expressJoi.createValidator({passError: true});
+
+ const BodyValidator = joi.object().keys({
+    name: joi.string().required().min(3).max(256),
+    description: joi.string().required().min(3)
+})
+
+const idParamsValidator = joi.object({
+  id: joi.string().hex().length(24).required()
+});
+
+export const activityBodyValidator = validator.body(BodyValidator);
+export const activityParamsValidator = validator.params(idParamsValidator);   
