@@ -5,6 +5,7 @@ import activitySchema from "../../schemas/activitySchema.js";
 import mongoose from "mongoose";
 import postSchema from "../../schemas/postSchema.js";
 import tagSchema from "../../schemas/tagSchema.js";
+import commentSchema from "../../schemas/commentSchema.js";
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -47,6 +48,7 @@ class FixturesUtils {
         await userSchema.deleteMany();
         await postSchema.deleteMany();
         await tagSchema.deleteMany();
+        await commentSchema.deleteMany();
     }
     async getUserFromDb(id){
         const user = await userSchema.findById(id);
