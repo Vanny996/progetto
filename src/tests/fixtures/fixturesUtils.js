@@ -3,6 +3,8 @@ import userSchema from "../../schemas/userSchema.js";
 import {activityStatus} from "../../constants/const.js";
 import activitySchema from "../../schemas/activitySchema.js";
 import mongoose from "mongoose";
+import postSchema from "../../schemas/postSchema.js";
+import tagSchema from "../../schemas/tagSchema.js";
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -43,6 +45,8 @@ class FixturesUtils {
     async clearDb() {
         await activitySchema.deleteMany();
         await userSchema.deleteMany();
+        await postSchema.deleteMany();
+        await tagSchema.deleteMany();
     }
     async getUserFromDb(id){
         const user = await userSchema.findById(id);

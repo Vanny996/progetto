@@ -11,5 +11,6 @@ export class UserRoutes{
         router.get('/user/:id/confirm/:token',confirmRegistrationValidator, confirmRegistration);
         router.post('/user/login',loginValidator,login);
         router.put('/user/profile',checkAuthorizationMiddleware,updateProfileValidator,updateProfile);
+
     }
 }
