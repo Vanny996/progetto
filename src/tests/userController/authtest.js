@@ -207,3 +207,87 @@ describe('login test ', () => {
         expect(res.body).to.not.have.property('password');
     });
 });
+describe.only('update profile', () => {
+
+    afterEach(async () => {
+        sandbox.restore();
+        await fixturesUtils.clearDb();
+    });
+
+    it('Should return 401 if no authorization header is present', async () => {
+        const res = await request.execute(app)
+            .put('/user/profile')
+            .send({ name: 'Nuovo Nome' });
+
+        expect(res.status).eq(401);
+    });
+
+    it('Should return 401 if token is invalid', async () => {
+        const res = await request.execute(app)
+            .put('/user/profile')
+            .set('Authorization', 'Bearer invalidtoken123')
+            .send({ name: 'Nuovo Nome' });
+
+        expect(res.status).eq(401);
+    });
+
+    it('Should return 400 if name is too short', async () => {
+        const user = await fixturesUtils.createUser({}, true);
+        const { accessToken } = cryptoUtils.generateTokens(user);
+
+        const res = await request.execute(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+    .send({ name: 'ab' });
+
+        expect(res.status).eq(400);
+    });
+
+    it('Should return 200 and update the name', async () => {
+        const user = await fixturesUtils.createUser({}, true);
+        const { accessToken } = cryptoUtils.generateTokens(user);
+
+        const res = await request.execute(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+    .send({ name: 'Nome Aggiornato' });
+
+        expect(res.status).eq(200);
+        expect(res.body.name).eq('Nome Aggiornato');
+        expect(res.body).to.not.have.property('password');
+        expect(res.body).to.not.have.property('salt');
+
+        const userInDb = await fixturesUtils.getUserFromDb(user._id);
+        expect(userInDb.name).eq('Nome Aggiornato');
+    });
+
+    it('Should return 200 and update the avatar', async () => {
+        const user = await fixturesUtils.createUser({}, true);
+        const { accessToken } = cryptoUtils.generateTokens(user);
+
+        const res = await request.execute(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+    .send({ avatar: 'https://example.com/new-avatar.png' });
+
+        expect(res.status).eq(200);
+        expect(res.body.avatar).eq('https://example.com/new-avatar.png');
+
+        const userInDb = await fixturesUtils.getUserFromDb(user._id);
+        expect(userInDb.avatar).eq('https://example.com/new-avatar.png');
+    });
+
+    it('Should not allow updating another user\'s profile via req.body id/userId injection', async () => {
+        const user = await fixturesUtils.createUser({}, true);
+        const otherUser = await fixturesUtils.createUser({ email: 'other@gmail.com' }, true);
+        const { accessToken } = cryptoUtils.generateTokens(user);
+
+        await request.execute(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+    .send({ name: 'Hacked Name', id: otherUser._id, userId: otherUser._id });
+
+        const otherUserInDb = await fixturesUtils.getUserFromDb(otherUser._id);
+        expect(otherUserInDb.name).to.not.eq('Hacked Name');
+    });
+});

@@ -6,7 +6,7 @@ import cryptoUtils from "../../utils/cryptoUtils.js";
 const { expect } = chai;
 const sandbox = sinon.createSandbox();
 
-describe.only('checkAuthorization middleware', () => {
+describe('checkAuthorization middleware', () => {
 
     let req, res, next;
 

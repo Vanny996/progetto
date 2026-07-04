@@ -29,3 +29,6 @@ export const loginUser = async (email,password)=>{
         name: user.name,
         id: user._id
     }}
+export const updateProfile= async (userId,updateData)=>{
+    return await userRepo.updateProfile(userId,updateData);
+}
