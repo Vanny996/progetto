@@ -11,3 +11,11 @@ const bodyValidator = joi.object({
 });
 
 export const addPostValidator = validator.body(bodyValidator);
+
+const updateBodyValidator = joi.object({
+    title: joi.string().min(3).max(256),
+    content: joi.string().min(1),
+    tags: joi.array().items(joi.string().min(2).max(50))
+});
+
+export const updatePostValidator = validator.body(bodyValidator);

@@ -11,7 +11,7 @@ import postSchema from "../../schemas/postSchema.js";
 const sandbox = sinon.createSandbox();
 chai.use(chaiHttp);
 
-describe.only('Post controller tests', () => {
+describe('Post controller tests', () => {
 
     afterEach(async () => {
         sandbox.restore();
@@ -151,6 +151,139 @@ describe.only('Post controller tests', () => {
             const res = await request.execute(app).get('/post/questo-non-e-un-id-valido');
 
             expect(res.status).eq(400);
+        });
+    });
+    describe('PUT /post/:id', () => {
+        it('Should return 401 if no authorization header is present', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const post = await postSchema.create({
+                title: 'Post originale',
+                content: 'Contenuto originale',
+                author: user._id,
+                tags: []
+            });
+
+            const res = await request.execute(app)
+                .put(`/post/${post._id}`)
+        .send({ title: 'Nuovo titolo' });
+
+            expect(res.status).eq(401);
+        });
+
+        it('Should return 200 and update the post if the user is the author', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+            const post = await postSchema.create({
+                title: 'Post originale',
+                content: 'Contenuto originale',
+                author: user._id,
+                tags: []
+            });
+
+            const res = await request.execute(app)
+                .put(`/post/${post._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ title: 'Titolo aggiornato' });
+
+            expect(res.status).eq(200);
+            expect(res.body.title).eq('Titolo aggiornato');
+
+            const postInDb = await postSchema.findById(post._id);
+            expect(postInDb.title).eq('Titolo aggiornato');
+        });
+
+        it('Should return 403 if the user is not the author of the post', async () => {
+            const author = await fixturesUtils.createUser({ email: 'author@gmail.com' }, true);
+            const otherUser = await fixturesUtils.createUser({ email: 'other@gmail.com' }, true);
+            const { accessToken } = cryptoUtils.generateTokens(otherUser);
+
+            const post = await postSchema.create({
+                title: 'Post di author',
+                content: 'Contenuto',
+                author: author._id,
+                tags: []
+            });
+
+            const res = await request.execute(app)
+                .put(`/post/${post._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ title: 'Tentativo di modifica' });
+
+            expect(res.status).eq(403);
+
+            const postInDb = await postSchema.findById(post._id);
+            expect(postInDb.title).eq('Post di author');
+        });
+
+        it('Should return 404 if the post does not exist', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+            const fakeId = '507f1f77bcf86cd799439011';
+
+            const res = await request.execute(app)
+                .put(`/post/${fakeId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ title: 'Non importa' });
+
+            expect(res.status).eq(404);
+        });
+    });
+
+    describe('DELETE /post/:id', () => {
+        it('Should return 401 if no authorization header is present', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const post = await postSchema.create({
+                title: 'Post da eliminare',
+                content: 'Contenuto',
+                author: user._id,
+                tags: []
+            });
+
+            const res = await request.execute(app).delete(`/post/${post._id}`);
+
+            expect(res.status).eq(401);
+        });
+
+        it('Should return 200 and delete the post if the user is the author', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+            const post = await postSchema.create({
+                title: 'Post da eliminare',
+                content: 'Contenuto',
+                author: user._id,
+                tags: []
+            });
+
+            const res = await request.execute(app)
+                .delete(`/post/${post._id}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+            expect(res.status).eq(200);
+
+            const postInDb = await postSchema.findById(post._id);
+            expect(postInDb).to.be.null;
+        });
+
+        it('Should return 403 if the user is not the author of the post', async () => {
+            const author = await fixturesUtils.createUser({ email: 'author2@gmail.com' }, true);
+            const otherUser = await fixturesUtils.createUser({ email: 'other2@gmail.com' }, true);
+            const { accessToken } = cryptoUtils.generateTokens(otherUser);
+
+            const post = await postSchema.create({
+                title: 'Post protetto',
+                content: 'Contenuto',
+                author: author._id,
+                tags: []
+            });
+
+            const res = await request.execute(app)
+                .delete(`/post/${post._id}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+            expect(res.status).eq(403);
+
+            const postInDb = await postSchema.findById(post._id);
+            expect(postInDb).to.not.be.null;
         });
     });
 });

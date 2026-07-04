@@ -1,5 +1,5 @@
 import multer from 'multer';
-import { addPost, getAllPosts, getPostById } from "../../services/postservice.js";
+import { addPost, getAllPosts, getPostById, updatePost,deletePost } from "../../services/postservice.js";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -42,6 +42,32 @@ export const listPosts = async (req, res) => {
     try {
         const posts = await getAllPosts();
         return res.status(200).json(posts);
+    } catch (err) {
+        const status = err.status || 500;
+        return res.status(status).json({ message: err.message });
+    }
+};
+export const editPost = async (req, res) => {
+    const { id } = req.params;
+    const authorId = req.userId;
+    const updateData = req.body;
+
+    try {
+        const post = await updatePost(id, authorId, updateData);
+        return res.status(200).json(post);
+    } catch (err) {
+        const status = err.status || 500;
+        return res.status(status).json({ message: err.message });
+    }
+};
+
+export const removePost = async (req, res) => {
+    const { id } = req.params;
+    const authorId = req.userId;
+
+    try {
+        await deletePost(id, authorId);
+        return res.status(200).json({ message: 'Post eliminato con successo' });
     } catch (err) {
         const status = err.status || 500;
         return res.status(status).json({ message: err.message });

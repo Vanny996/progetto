@@ -1,7 +1,7 @@
 import express from 'express';
 import checkAuthorizationMiddleware from '../middlewares/checkAuthorizationMiddleware.js';
-import { addPostValidator } from '../validators/postValidator.js';
-import { createPost, listPosts, getPost, uploadPostImage } from '../controllers/postController/PostController.js';
+import { addPostValidator, updatePostValidator } from '../validators/postValidator.js';
+import { createPost, listPosts, getPost, uploadPostImage, editPost, removePost } from '../controllers/postController/PostController.js';
 
 export class PostRoutes {
     constructor(router) {
@@ -9,5 +9,7 @@ export class PostRoutes {
 
         router.get('/post', listPosts);
         router.get('/post/:id', getPost);
+        router.put('/post/:id', checkAuthorizationMiddleware, updatePostValidator, editPost);
+        router.delete('/post/:id', checkAuthorizationMiddleware, removePost);
     }
 }

@@ -21,3 +21,16 @@ export const getPostById = async (id) => {
 export const getAllPosts = async () => {
     return await postRepo.getAll();
 };
+export const updatePost = async (id, authorId, updateData) => {
+    const dataToUpdate = { ...updateData };
+
+    if (updateData.tags) {
+        dataToUpdate.tags = await postRepo.findOrCreateTags(updateData.tags);
+    }
+
+    return await postRepo.updatePost(id, authorId, dataToUpdate);
+};
+
+export const deletePost = async (id, authorId) => {
+    return await postRepo.deletePost(id, authorId);
+};

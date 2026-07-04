@@ -3,7 +3,10 @@ import tagSchema from "../schemas/tagSchema.js";
 import DomainException from "../exceptions/DomainException.js";
 import NotFoundException from "../exceptions/NotFoundException.js";
 import BadRequestException from "../exceptions/BadRequestExceptions.js";
+import ForbiddenException from "../exceptions/ForbiddenExceptions.js";
 import mongoose from "mongoose";
+import updatePostSchema from "../schemas/postSchema.js";
+import deletePostSchema from "../schemas/postSchema.js";
 
 class PostRepository {
 
