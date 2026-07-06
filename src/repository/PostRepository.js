@@ -5,8 +5,6 @@ import NotFoundException from "../exceptions/NotFoundException.js";
 import BadRequestException from "../exceptions/BadRequestExceptions.js";
 import ForbiddenException from "../exceptions/ForbiddenExceptions.js";
 import mongoose from "mongoose";
-import updatePostSchema from "../schemas/postSchema.js";
-import deletePostSchema from "../schemas/postSchema.js";
 
 class PostRepository {
 
@@ -47,6 +45,47 @@ class PostRepository {
 }
     async getAll() {
         return await postSchema.find().populate(['tags', 'author']).sort({ publishedAt: -1 });
+    }
+    async findOwnedPostOrThrow(id, authorId) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new BadRequestException('Id del post non valido');
+        }
+
+        const post = await postSchema.findById(id).catch((err) => {
+            throw new DomainException(`Errore durante il recupero del post: ${err.message}`);
+        });
+
+        if (!post) {
+            throw new NotFoundException('Post non trovato');
+        }
+
+        if (post.author.toString() !== authorId.toString()) {
+            throw new ForbiddenException('Non sei autorizzato a modificare questo post');
+        }
+
+        return post;
+    }
+
+    async updatePost(id, authorId, updateData) {
+        const post = await this.findOwnedPostOrThrow(id, authorId);
+
+        Object.assign(post, updateData);
+
+        const saved = await post.save().catch((err) => {
+            throw new DomainException(`Errore durante l'aggiornamento del post: ${err.message}`);
+        });
+
+        return await saved.populate(['tags', 'author']);
+    }
+
+    async deletePost(id, authorId) {
+        const post = await this.findOwnedPostOrThrow(id, authorId);
+
+        await post.deleteOne().catch((err) => {
+            throw new DomainException(`Errore durante l'eliminazione del post: ${err.message}`);
+        });
+
+        return post.toObject();
     }
 }
 

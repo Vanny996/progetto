@@ -7,11 +7,13 @@ import sinon from 'sinon';
 import cryptoUtils from "../../utils/cryptoUtils.js";
 import tagSchema from "../../schemas/tagSchema.js";
 import postSchema from "../../schemas/postSchema.js";
+import likeSchema from "../../schemas/likeSchema.js";
+import commentSchema from "../../schemas/commentSchema.js";
 
 const sandbox = sinon.createSandbox();
 chai.use(chaiHttp);
 
-describe('Post controller tests', () => {
+describe.only('Post controller tests', () => {
 
     afterEach(async () => {
         sandbox.restore();
@@ -98,6 +100,23 @@ describe('Post controller tests', () => {
             expect(res.status).eq(200);
             expect(res.body).to.have.lengthOf(1);
         });
+
+        it('Should include likesCount and commentsCount for each post in the list', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const post = await postSchema.create({
+                title: 'Post nella lista',
+                content: 'Contenuto',
+                author: user._id,
+                tags: []
+            });
+            await likeSchema.create({ user: user._id, post: post._id });
+
+            const res = await request.execute(app).get('/post');
+
+            expect(res.status).eq(200);
+            expect(res.body[0].likesCount).eq(1);
+            expect(res.body[0].commentsCount).eq(0);
+        });
     });
 
     describe('GET /post/:id', () => {
@@ -152,6 +171,44 @@ describe('Post controller tests', () => {
 
             expect(res.status).eq(400);
         });
+        it('Should include likesCount and commentsCount, both 0 for a post with no interactions', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const post = await postSchema.create({
+                title: 'Post senza interazioni',
+                content: 'Contenuto',
+                author: user._id,
+                tags: []
+            });
+
+            const res = await request.execute(app).get(`/post/${post._id}`);
+
+            expect(res.status).eq(200);
+            expect(res.body.likesCount).eq(0);
+            expect(res.body.commentsCount).eq(0);
+        });
+
+        it('Should include correct likesCount and commentsCount after interactions', async () => {
+            const author = await fixturesUtils.createUser({ email: 'countauthor@gmail.com' }, true);
+            const liker = await fixturesUtils.createUser({ email: 'countliker@gmail.com' }, true);
+
+            const post = await postSchema.create({
+                title: 'Post con interazioni',
+                content: 'Contenuto',
+                author: author._id,
+                tags: []
+            });
+
+            await likeSchema.create({ user: liker._id, post: post._id });
+            await commentSchema.create({ text: 'Primo commento', author: liker._id, post: post._id });
+            await commentSchema.create({ text: 'Secondo commento', author: author._id, post: post._id });
+
+            const res = await request.execute(app).get(`/post/${post._id}`);
+
+            expect(res.status).eq(200);
+            expect(res.body.likesCount).eq(1);
+            expect(res.body.commentsCount).eq(2);
+        });
+
     });
     describe('PUT /post/:id', () => {
         it('Should return 401 if no authorization header is present', async () => {

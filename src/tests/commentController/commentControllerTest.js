@@ -42,7 +42,7 @@ describe('Comment controller tests', () => {
                 title: 'Post di prova',
                 content: 'Contenuto',
                 author: user._id,
-                tags: []
+                tags: [],
             });
 
             const res = await request.execute(app)

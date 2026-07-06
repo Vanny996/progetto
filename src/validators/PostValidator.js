@@ -18,4 +18,4 @@ const updateBodyValidator = joi.object({
     tags: joi.array().items(joi.string().min(2).max(50))
 });
 
-export const updatePostValidator = validator.body(bodyValidator);
+export const updatePostValidator = validator.body(updateBodyValidator);

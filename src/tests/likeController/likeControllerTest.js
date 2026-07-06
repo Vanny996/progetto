@@ -11,7 +11,7 @@ import likeSchema from '../../schemas/likeSchema.js';
 const sandbox = sinon.createSandbox();
 chai.use(chaiHttp);
 
-describe.only('Like controller tests', () => {
+describe('Like controller tests', () => {
 
     afterEach(async () => {
         sandbox.restore();
