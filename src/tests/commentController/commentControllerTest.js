@@ -88,6 +88,32 @@ describe('Comment controller tests', () => {
 
             expect(res.status).eq(400);
         });
+        it('Should return 400 if text is missing when editing a comment', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+            const post = await postSchema.create({ title: 'Post', content: 'Contenuto', author: user._id, tags: [] });
+            const comment = await commentSchema.create({ text: 'Originale', author: user._id, post: post._id });
+
+            const res = await request.execute(app)
+                .put(`/comment/${comment._id}`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({});
+
+            expect(res.status).eq(400);
+        });
+
+        it('Should return 404 when editing a comment that does not exist', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+            const fakeId = '507f1f77bcf86cd799439011';
+
+            const res = await request.execute(app)
+                .put(`/comment/${fakeId}`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .send({ text: 'Non importa' });
+
+            expect(res.status).eq(404);
+        });
     });
 
     describe('PUT /comment/:id', () => {
@@ -138,6 +164,7 @@ describe('Comment controller tests', () => {
 
             expect(res.status).eq(403);
         });
+
     });
 
     describe('DELETE /comment/:id', () => {

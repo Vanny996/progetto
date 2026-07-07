@@ -2,7 +2,6 @@ import cryptoRandomString from 'crypto-random-string';
 import * as crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { publicKey, privateKey } from '../constants/const.js'
-
 class CryptoUtils {
     generateRandomCode(length,type){
         return cryptoRandomString({length: length, type: type ||'base64'})
@@ -19,8 +18,7 @@ class CryptoUtils {
 
     }
     generateToken(user,expiration) {
-        console.log("GenerateToken");
-        return jwt.sign({
+                return jwt.sign({
                 _id: user._id || user.id,
                 name: user.name,
                 expiration: expiration
@@ -37,7 +35,6 @@ class CryptoUtils {
             refreshToken: this.generateToken(user, 7776000)
         }
     }
-
     verifyToken(token){
         return jwt.verify(token,publicKey, {ignoreExpirations: false, algorithms : ['RS256'] })
     }

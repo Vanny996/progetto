@@ -71,11 +71,7 @@ class CommentRepository {
     }
 
     async countByPost(postId) {
-        return await commentSchema.countDocuments({ post: postId });
-    }
-
-    async findByPost(postId) {
-        return await commentSchema.find({ post: postId }).populate('author').sort({ createdAt: -1 });
+        return await commentSchema.countDocuments({post: postId});
     }
 }
 

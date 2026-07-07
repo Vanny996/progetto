@@ -2,13 +2,9 @@ import * as chai from 'chai';
 const {expect} = chai;
 import chaiHttp,{ request} from 'chai-http';
 import app from '../../../server.js';
-
 import fixturesUtils from "../fixtures/fixturesUtils.js";
-
 import sinon from "sinon";
-import mailer from "nodemailer";
 import {userStatus} from "../../constants/const.js";
-
 import cryptoUtils from '../../utils/cryptoUtils.js';
 import mailService from "../../services/mailService.js";
 
@@ -49,7 +45,6 @@ describe('ADD user controller tests',() => {
             }
             const res = await request.execute(app).post(`/user`).send(userData);
             expect(res.status).eq(400);
-            // expect(res.message).eq('ValidationError: "password" is required')
         })
         it('Should return 400 if email is not valid  ', async () => {
             const userData = {
@@ -207,7 +202,7 @@ describe('login test ', () => {
         expect(res.body).to.not.have.property('password');
     });
 });
-describe.only('update profile', () => {
+describe('update profile', () => {
 
     afterEach(async () => {
         sandbox.restore();

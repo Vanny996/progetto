@@ -1,8 +1,10 @@
-
 import express from 'express';
 import {registerRoutes}from'./src/routes/route.js';
 import {connect} from './dataBase.js';
-//import SchedulerService from "./src/services/schedulerService.js";
+import swaggerUi from 'swagger-ui-express';
+import { swaggerDocument} from "./src/config/swaggerDocument.js";
+
+
 
 const host ='localhost';
 const port = 8003;
@@ -13,8 +15,7 @@ registerRoutes(app);
 
 await connect()
 registerRoutes(app);
-//const scheduler = new SchedulerService();
-//scheduler.start();
+
 app.use((err, req, res, next) => {
     if (err?.error && err.error.isJoi) {
         res.status(400).json({ type: err.type, message: err.error.toString() });
@@ -23,6 +24,7 @@ app.use((err, req, res, next) => {
     }
 });
 
+app.use('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument));
 app.listen(port,host,()=>{
     console.log(`server avviato ${host}:${port}`);
 })

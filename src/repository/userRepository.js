@@ -20,7 +20,6 @@ class userRepository {
             throw new MongoInternalExceptions(`errore: ${err.message}`);
         }
     }
-
     async findByEmail(email) {
         const res = await userSchema.findOne({ email }).catch((err) => {
             throw new DomainException(`Errore durante la ricerca email`);
@@ -31,8 +30,6 @@ class userRepository {
         }
         return res.toObject();
     }
-
-
     async getByIdAndToken(id, token) {
         const res = await userSchema.findOneAndUpdate(
             { _id: id, registrationToken: token },
@@ -47,8 +44,6 @@ class userRepository {
         }
         return res.toObject();
     }
-
-
     async updateProfile(id, updateData) {
         const res = await userSchema.findByIdAndUpdate(
             id,

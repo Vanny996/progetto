@@ -1,7 +1,5 @@
 import CryptoUtils from "../../utils/cryptoUtils.js";
 import userSchema from "../../schemas/userSchema.js";
-import {activityStatus} from "../../constants/const.js";
-import activitySchema from "../../schemas/activitySchema.js";
 import mongoose from "mongoose";
 import postSchema from "../../schemas/postSchema.js";
 import tagSchema from "../../schemas/tagSchema.js";
@@ -31,24 +29,8 @@ class FixturesUtils {
         return user;
     }
 
-    async createActivity(data, save) {
-        const activity = {
-            name: data.name || 'test Activity',
-            _id: data.id || new ObjectId(),
-            ownerId: data.ownerId || data.owner || 'null',
-            description: data.description || 'test Activity description',
-            status: data.status || activityStatus.OPEN,
-            dueDate:data.dueDate || new Date(),
-        }
-        if (save) {
-            const res = await activitySchema.create(activity);
-            return res.toObject();
-        }
-        return activity;
-    }
-    async clearDb() {
-        await activitySchema.deleteMany();
-        await userSchema.deleteMany();
+      async clearDb() {
+               await userSchema.deleteMany();
         await postSchema.deleteMany();
         await tagSchema.deleteMany();
         await commentSchema.deleteMany();

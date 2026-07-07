@@ -13,7 +13,7 @@ import commentSchema from "../../schemas/commentSchema.js";
 const sandbox = sinon.createSandbox();
 chai.use(chaiHttp);
 
-describe.only('Post controller tests', () => {
+describe('Post controller tests', () => {
 
     afterEach(async () => {
         sandbox.restore();

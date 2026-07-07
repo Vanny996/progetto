@@ -120,5 +120,15 @@ describe('Like controller tests', () => {
             expect(duplicateError).to.exist;
             expect(duplicateError.code).eq(11000);
         });
+        it('Should return 400 if postId format is invalid', async () => {
+            const user = await fixturesUtils.createUser({}, true);
+            const { accessToken } = cryptoUtils.generateTokens(user);
+
+            const res = await request.execute(app)
+                .post('/post/id-non-valido/like')
+                .set('Authorization', `Bearer ${accessToken}`);
+
+            expect(res.status).eq(400);
+        });
     });
 });
